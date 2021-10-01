@@ -37,7 +37,7 @@
 //#define moore					// N = L^2
 
 enum tipo_rede {QUADRADA, CUBICA, QUADRIDIMENSIONAL, HEXAGONAL, KAGOME,
-					TRIANGULAR, MOORE};
+					TRIANGULAR, MOORE, MULTI2SQR};
 enum tipo_rede REDE_ATUAL;// = HEXAGONAL;
 enum tipo_estrategia {DEFECTOR, COOPERATOR, PUNISHER};
 
@@ -417,7 +417,7 @@ void calculo_mcs(double *payoff, int state[N], int **viz, double r, double gama,
 				Px += payoff[state[x]];
 			}
 
-			for(y=0;y<topologia[x];y++)
+			for(y=0;y<topologia[vizinho];y++)
 			{			
 				vizinho2 = viz[vizinho][y];
 				calculo_numero(state,vizinho2,viz,topologia);
@@ -632,6 +632,15 @@ void initialize_network(char REDE_ATUAL_NAME[], char filename[], double r, doubl
 														//fprintf(stderr,"%s escolhida!\n",REDE_ATUAL_NAME); fflush(stderr);
 														sprintf(filename,"moore_dados_r%f_g%f_d%f_seed%ld.txt",r,gama,delta,rseed);
 													}
+													else {
+															if (!strcmp(REDE_ATUAL_NAME, "multi2sqr")  || !strcmp(REDE_ATUAL_NAME, "MULTI2SQR")){
+																N = 2*L2; G = 6;
+																REDE_ATUAL=MULTI2SQR;
+																//fprintf(stderr,"%s escolhida!\n",REDE_ATUAL_NAME); fflush(stderr);
+																sprintf(filename,"multi2sqr_dados_r%f_g%f_d%f_seed%ld.txt",r,gama,delta,rseed);
+															}
+														
+													     }
 												 }
 										}
 								}
@@ -688,8 +697,11 @@ int main(int argc, char *argv[])
 	initialize_network(REDE_ATUAL_NAME,filename,r,gama,delta,rseed);
 	    
 	//N_viz = G-1;
-	int state[N],**viz,topologia[N];
+	//int state[N],**viz,topologia[N];
+	int *state,**viz,*topologia;
 	
+	state=create_int_pointer(N);
+	topologia=create_int_pointer(N);
 	//viz = create_2d_int_pointer_h(N,N_viz+1);	
 	viz = create_2d_int_pointer_h(N,G);	
 	
@@ -713,6 +725,8 @@ int main(int argc, char *argv[])
 			break;
 		case MOORE: rede_moore(viz,L);
 			break;
+		case MULTI2SQR: multilayer2_quadrada (viz,L);
+			break;	
 		default:
 			fprintf(stderr,"ERRO inicializacao rede!\n");
 			fflush(stderr);
@@ -779,7 +793,10 @@ int main(int argc, char *argv[])
 
 fclose(fp);
 
-return 0;
+free(state);
+free(topologia);
 //free_2d_int_pointer(viz,N,N_viz+1);
 free_2d_int_pointer(viz,N,G);
+
+return 0;
 } //main
