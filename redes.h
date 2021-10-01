@@ -2,6 +2,43 @@
 ***                        Topologias                             ***
 ********************************************************************/
 
+/********************************************************************
+***                    Multilayer 2 Quadrada                      ***
+********************************************************************/
+void multilayer2_quadrada (int **viz, int L)
+{
+	int x;
+	int L2 = L*L;
+	long int N = 2*L2;
+	//G=6;
+	
+	for(x=0;x<N;x++)
+	{	
+		viz[x][0] = x;     // autointeraçao
+		viz[x][1] = x - L; //vizinho acima de i
+		viz[x][2] = x + 1; //vizinho à direita de i
+		viz[x][3] = x + L; //vizinho abaixo sito de i
+		viz[x][4] = x - 1; //vizinho à esquerda i
+		if (x<L2)
+			viz[x][5] = x + L2; // vizinho na outra rede
+		else
+			viz[x][5] = x - L2; // vizinho na outra rede
+		
+		/********************************************************************
+		***                            C.C.P.                             ***
+		********************************************************************/	
+		//fronteira superior (i->L-1)
+		if ((x%L2) < L){ viz[x][1] = x + (L - 1) * L; }
+		//fronteira esquerda (j->L-1)
+		if ((x%L2) % L == 0){ viz[x][4] = x + (L - 1); }
+		//fronteira inferior (i->0)
+		if ((x%L2) >= L2-L){ viz[x][3] = x - (L - 1) * L; }
+		//fronteira direita (j->0)
+		if (((x-L+1)%L2) % L == 0){ viz[x][2] = x - (L - 1); }
+	}
+	
+	return;
+}
 
 /********************************************************************
 ***                     Rede Quadrada                             ***
